@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <button id = "openbtn">打开图片</button>
+    <button id = "savebtn">保存图片</button>
+    <button id = "msgbtn">弹出对话框</button>
+    <img src="" id = "image" style = "width: 100%"/>
+</body>
+<script>
+    // 选择文件对话框，保存对话框，消息对话框
+    const btn  = document.querySelector('#openbtn');
+    const {dialog} = require('@electron/remote');
+    const fs = require('fs');
+    btn.onclick =  function() {
+        dialog.showOpenDialog({
+            title: '请选择你要上传的图片',
+            filters: [{name: 'image', extension: ['jpg']}],
+            buttonLabel: 'open'
+        }).then(
+            result=> {
+                console.log(result);
+                let image = document.querySelector('#image');
+                image.setAttribute("src", result.filePaths[0])
+            }
+        ).catch(
+            err => {
+                console.log(err);
+            } 
+        )
+    }
+
+    let savebtn = document.querySelector('#savebtn');
+    savebtn.onclick = () => {
+        dialog.showSaveDialog({
+            title: '保存文件'
+        }).then(result => {
+            console.log(result);
+            fs.writeFileSync(result.filePath, '文件内容');
+        }).catch(err=> {
+            console.log(err);
+        })
+    }
+
+    let msgbtn = document.querySelector('#msgbtn');
+    msgbtn.onclick = () => {
+        dialog.showMessageBox({
+            type: 'warning',
+            title: '你确定打开么？',
+            message: '打开有惊喜',
+            buttons: ['确定', '取消']
+        }).then(result => {
+            console.log(result);
+        }).catch(err=> {
+            console.log(err);
+        })
+    }
+
+</script>
+</html>
